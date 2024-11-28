@@ -7,6 +7,8 @@ body {
     margin: 0;
 }
 
+/* login page */
+
 .login-container {
     width: 1280px;
     height: 832px;
@@ -102,4 +104,133 @@ body {
 
 .login-button .button-content {
     background: #4A43FF;
+}
+
+/* home page */
+/* header */
+.header-container {
+    width: 100vw;
+    height: 56px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    outline: 2px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px;
+    box-sizing: border-box;
+    background-color: white;
+}
+
+.logout-button {
+    width: 114px;
+    height: 40px;
+    background: #4A43FF;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.button-link {
+    margin-right: 0px;
+    color: white;
+    font-size: 24px;
+    font-family: 'Geist Mono', monospace;
+    font-weight: 400;
+    word-wrap: break-word;
+    text-decoration: none;
+}
+
+.username {
+    margin-left: 0px;
+    color: black;
+    font-size: 24px;
+    font-family: 'Geist Mono', monospace;
+    font-weight: 400;
+    word-wrap: break-word;
+}
+
+/* part with blocks */
+.container-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 56px;
+    padding: 10px;
+    box-sizing: border-box;
+    width: 100%;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+    gap: 8px;
+}
+
+.container {
+    width: 400px;
+    position: relative;
+    background: #F5F5F5;
+    border: 2px black solid;
+    padding: 10px;
+    box-sizing: border-box;
+    margin-bottom: 0;
+    padding-bottom: 60px;
+}
+
+.header {
+    width: 100%;
+    height: 40px;
+    background: #1BFF98;
+    border: 2px black solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.header-text {
+    color: black;
+    font-size: 24px;
+    font-family: Geist Mono;
+    font-weight: 400;
+    word-wrap: break-word;
+    margin: 0; 
+    font-family: 'Geist Mono', monospace;
+}
+
+.save-button {
+    width: 70px;
+    height: 40px;
+    background: #FF7777;
+    border-radius: 5px;
+    position: absolute;
+    color: white;
+    font-size: 24px;
+    font-family: Geist Mono;
+    font-weight: 400;
+    word-wrap: break-word;
+    text-align: center;
+    line-height: 40px;
+    right: 10px;
+    bottom: 10px;
+}
+
+.content {
+    position: relative;
+    color: black;
+    font-size: 24px;
+    font-family: Geist Mono;
+    font-weight: 400;
+    word-wrap: break-word;
+    text-align: center;
+    margin-top: 20px;
+    outline: none;
+    font-family: 'Geist Mono', monospace;
+}
+
+.content[contenteditable="true"]:focus {
+    background-color: #F5F5F5; 
 }
