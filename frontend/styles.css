@@ -10,9 +10,13 @@ body {
 /* login page */
 
 .login-container {
-    width: 1280px;
-    height: 832px;
+    width: 250px;
+    height: 136px;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .nickname-input, .password-input {
@@ -22,13 +26,13 @@ body {
 }
 
 .nickname-input {
-    left: 515px;
-    top: 372px;
+    left: 0px;
+    top: 0px;
 }
 
 .password-input {
-    left: 515px;
-    top: 420px;
+    left: 0px;
+    top: 48px;
 }
 
 .input-box {
@@ -69,14 +73,14 @@ body {
 }
 
 .register-button {
-    left: 515px;
-    top: 468px;
+    left: 0px;
+    top: 96px;
     width: 140px;
 }
 
 .login-button {
-    left: 663px;
-    top: 468px;
+    left: 148px;
+    top: 96px;
     width: 104px;
 }
 
