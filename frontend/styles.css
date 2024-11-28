@@ -1,0 +1,105 @@
+body {
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.login-container {
+    width: 1280px;
+    height: 832px;
+    position: relative;
+}
+
+.nickname-input, .password-input {
+    width: 250px;
+    height: 40px;
+    position: absolute;
+}
+
+.nickname-input {
+    left: 515px;
+    top: 372px;
+}
+
+.password-input {
+    left: 515px;
+    top: 420px;
+}
+
+.input-box {
+    width: 250px;
+    height: 40px;
+    background: #F3F2F2;
+    border-radius: 5px;
+    border: 2px black solid;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    font-family: 'Geist Mono', monospace;
+    font-size: 24px;
+    padding: 5px 10px;
+    box-sizing: border-box;
+}
+
+.label {
+    left: 67px;
+    top: 5px;
+    position: absolute;
+    color: #959595;
+    font-size: 24px;
+    font-family: 'Geist Mono', monospace;
+    font-weight: 400;
+    word-wrap: break-word;
+    pointer-events: none;
+    transition: opacity 0.5s;
+}
+
+.input-box:not(:placeholder-shown) + .label {
+    opacity: 0;
+}
+
+.register-button, .login-button {
+    position: absolute;
+    height: 40px;
+}
+
+.register-button {
+    left: 515px;
+    top: 468px;
+    width: 140px;
+}
+
+.login-button {
+    left: 663px;
+    top: 468px;
+    width: 104px;
+}
+
+.button-link {
+    text-decoration: none;
+}
+
+.button-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    font-family: 'Geist Mono', monospace;
+    font-weight: 400;
+    word-wrap: break-word;
+    border-radius: 5px;
+}
+
+.register-button .button-content {
+    background: #C10505;
+}
+
+.login-button .button-content {
+    background: #4A43FF;
+}
