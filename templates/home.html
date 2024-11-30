@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="header-container">
-        <div class="username">daniilp</div>
+        <div class="username">{{ user.nickname }}</div>
         <div class="logout-button">
             <button class="button-link" onclick="handleLogout()">
                 <div class="button-content">log out</div>
@@ -22,7 +22,7 @@
                 <div class="header-text">would like to receive:</div>
             </div>
             <div class="content" contenteditable="true" id="wishes-content">
-                [type here what you wish for]
+                {{ user.wishes or '[type here what you wish for]' }}
             </div>
             <div class="save-button">
                 <button class="button-link" onclick="handleSaveWishes()">
@@ -36,7 +36,7 @@
                 <div class="header-text">contact info:</div>
             </div>
             <div class="content" contenteditable="true" id="contact-info-content">
-                [type here how to contact with you]
+                {{ user.contact_info or '[type here how to contact with you]' }}
             </div>
             <div class="save-button">
                 <button class="button-link" onclick="handleSaveContactInfo()">
@@ -50,7 +50,11 @@
                 <div class="header-text">you are gifting to:</div>
             </div>
             <div class="content">
-                will be randomly chosen at 18th, December <br>(name + contact info<br/>+ wanted gifts)
+                {% if user.gifting_to %}
+                    {{ user.gifting_to }}
+                {% else %}
+                    will be randomly chosen at 18th, December <br>(name + contact info<br/>+ wanted gifts)
+                {% endif %}
             </div>
         </div>
     </div>

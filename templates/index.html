@@ -59,16 +59,36 @@
                 const data = await response.json();
                 if (response.ok) {
                     alert(data.message);
-                    window.location.href = 'home';
+                    window.location.href = `home?nickname=${nickname}`;
                 } else {
                     alert('Registration failed: ' + data.detail);
                 }
             }
         }
     
-        function handleLogin() {
+        async function handleLogin() {
             if (validateInputs()) {
-                window.location.href = 'home';
+                const nickname = document.getElementById('nickname').value.trim();
+                const password = document.getElementById('password').value.trim();
+    
+                const payload = { nickname, password };
+                console.log('Sending payload:', payload);
+    
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload),
+                });
+    
+                const data = await response.json();
+                if (response.ok) {
+                    alert(data.message);
+                    window.location.href = `home?nickname=${nickname}`;
+                } else {
+                    alert('Login failed: ' + data.detail);
+                }
             }
         }
     </script>    

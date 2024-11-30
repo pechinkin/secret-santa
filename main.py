@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.requests import Request
@@ -37,13 +37,20 @@ class UserCreate(BaseModel):
     nickname: str
     password: str
 
+class UserLogin(BaseModel):
+    nickname: str
+    password: str
+
 @app.get("/", response_class=HTMLResponse)
 async def read_index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 @app.get("/home", response_class=HTMLResponse)
-async def read_home(request: Request):
-    return templates.TemplateResponse("home.html", {"request": request})
+async def read_home(request: Request, nickname: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.nickname == nickname).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return templates.TemplateResponse("home.html", {"request": request, "user": user})
 
 @app.post("/register")
 async def register_user(user: UserCreate, db: Session = Depends(get_db)):
@@ -55,6 +62,13 @@ async def register_user(user: UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_user)
     return {"message": "User registered successfully"}
+
+@app.post("/login")
+async def login_user(user: UserLogin, db: Session = Depends(get_db)):
+    db_user = db.query(User).filter(User.nickname == user.nickname).first()
+    if not db_user or db_user.password != user.password:
+        raise HTTPException(status_code=400, detail="Invalid nickname or password")
+    return {"message": "Login successful", "nickname": db_user.nickname}
 
 @app.on_event("startup")
 async def startup():
