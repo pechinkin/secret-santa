@@ -1,14 +1,41 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.requests import Request
+from sqlalchemy import create_engine, Column, String, Text
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, Session
+from pydantic import BaseModel
+
+SQLALCHEMY_DATABASE_URL = "postgresql://myuser:mypassword@localhost/mydatabase"
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
+
+class User(Base):
+    __tablename__ = "users"
+    nickname = Column(String(50), primary_key=True, index=True)
+    password = Column(String(100), nullable=False)
+    contact_info = Column(String(255))
+    wishes = Column(Text)
+    gifting_to = Column(String(50))
 
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
 templates = Jinja2Templates(directory="templates")
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+class UserCreate(BaseModel):
+    nickname: str
+    password: str
 
 @app.get("/", response_class=HTMLResponse)
 async def read_index(request: Request):
@@ -17,3 +44,18 @@ async def read_index(request: Request):
 @app.get("/home", response_class=HTMLResponse)
 async def read_home(request: Request):
     return templates.TemplateResponse("home.html", {"request": request})
+
+@app.post("/register")
+async def register_user(user: UserCreate, db: Session = Depends(get_db)):
+    db_user = db.query(User).filter(User.nickname == user.nickname).first()
+    if db_user:
+        raise HTTPException(status_code=400, detail="Nickname already registered")
+    db_user = User(nickname=user.nickname, password=user.password)
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return {"message": "User registered successfully"}
+
+@app.on_event("startup")
+async def startup():
+    Base.metadata.create_all(bind=engine)

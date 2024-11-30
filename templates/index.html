@@ -29,13 +29,48 @@
     </div>
 
     <script>
-        function handleRegister() {
-            window.location.href = 'home';
+        function validateInputs() {
+            const nickname = document.getElementById('nickname').value.trim();
+            const password = document.getElementById('password').value.trim();
+    
+            if (nickname === '' || password === '') {
+                alert('Both fields must be filled');
+                return false;
+            }
+            return true;
         }
-
+    
+        async function handleRegister() {
+            if (validateInputs()) {
+                const nickname = document.getElementById('nickname').value.trim();
+                const password = document.getElementById('password').value.trim();
+    
+                const payload = { nickname, password };
+                console.log('Sending payload:', payload);
+    
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload),
+                });
+    
+                const data = await response.json();
+                if (response.ok) {
+                    alert(data.message);
+                    window.location.href = 'home';
+                } else {
+                    alert('Registration failed: ' + data.detail);
+                }
+            }
+        }
+    
         function handleLogin() {
-            window.location.href = 'home';
+            if (validateInputs()) {
+                window.location.href = 'home';
+            }
         }
-    </script>
+    </script>    
 </body>
 </html>
