@@ -17,15 +17,25 @@
             <label for="password" class="label">password</label>
         </div>
         <div class="register-button">
-            <a href="home" class="button-link">
+            <button class="button-link" onclick="handleRegister()">
                 <div class="button-content">register</div>
-            </a>
+            </button>
         </div>
         <div class="login-button">
-            <a href="home" class="button-link">
+            <button class="button-link" onclick="handleLogin()">
                 <div class="button-content">log in</div>
-            </a>
+            </button>
         </div>
     </div>
+
+    <script>
+        function handleRegister() {
+            window.location.href = 'home';
+        }
+
+        function handleLogin() {
+            window.location.href = 'home';
+        }
+    </script>
 </body>
 </html>

@@ -10,9 +10,9 @@
     <div class="header-container">
         <div class="username">daniilp</div>
         <div class="logout-button">
-            <a href="./" class="button-link">
+            <button class="button-link" onclick="handleLogout()">
                 <div class="button-content">log out</div>
-            </a>
+            </button>
         </div>
     </div>
 
@@ -21,13 +21,13 @@
             <div class="header">
                 <div class="header-text">would like to receive:</div>
             </div>
-            <div class="content" contenteditable="true">
+            <div class="content" contenteditable="true" id="wishes-content">
                 [type here what you wish for]
             </div>
             <div class="save-button">
-                <a href="#" class="button-link">
+                <button class="button-link" onclick="handleSaveWishes()">
                     <div class="button-content">save</div>
-                </a>
+                </button>
             </div>
         </div>
 
@@ -35,13 +35,13 @@
             <div class="header">
                 <div class="header-text">contact info:</div>
             </div>
-            <div class="content" contenteditable="true">
+            <div class="content" contenteditable="true" id="contact-info-content">
                 [type here how to contact with you]
             </div>
             <div class="save-button">
-                <a href="#" class="button-link">
+                <button class="button-link" onclick="handleSaveContactInfo()">
                     <div class="button-content">save</div>
-                </a>
+                </button>
             </div>
         </div>
 
@@ -54,5 +54,21 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function handleLogout() {
+            window.location.href = './';
+        }
+
+        function handleSaveWishes() {
+            const wishesContent = document.getElementById('wishes-content').innerText;
+            alert('Wishes saved: ' + wishesContent);
+        }
+
+        function handleSaveContactInfo() {
+            const contactInfoContent = document.getElementById('contact-info-content').innerText;
+            alert('Contact info saved: ' + contactInfoContent);
+        }
+    </script>
 </body>
 </html>

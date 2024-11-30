@@ -85,7 +85,17 @@ body {
 }
 
 .button-link {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
     text-decoration: none;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .button-content {
@@ -109,6 +119,7 @@ body {
 .login-button .button-content {
     background: #4A43FF;
 }
+
 
 /* home page */
 /* header */
