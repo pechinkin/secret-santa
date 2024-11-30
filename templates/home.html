@@ -63,16 +63,41 @@
         function handleLogout() {
             window.location.href = './';
         }
-
-        function handleSaveWishes() {
+    
+        async function handleSaveWishes() {
             const wishesContent = document.getElementById('wishes-content').innerText;
-            alert('Wishes saved: ' + wishesContent);
+            const nickname = document.querySelector('.username').innerText;
+            const response = await fetch('/save-wishes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ nickname: nickname, wishes: wishesContent })
+            });
+            if (response.ok) {
+                alert('Wishes saved successfully');
+            } else {
+                alert('Failed to save wishes');
+            }
         }
-
-        function handleSaveContactInfo() {
+    
+        async function handleSaveContactInfo() {
             const contactInfoContent = document.getElementById('contact-info-content').innerText;
-            alert('Contact info saved: ' + contactInfoContent);
+            const nickname = document.querySelector('.username').innerText;
+            const response = await fetch('/save-contact-info', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ nickname: nickname, contact_info: contactInfoContent })
+            });
+            if (response.ok) {
+                alert('Contact info saved successfully');
+            } else {
+                alert('Failed to save contact info');
+            }
         }
     </script>
+    
 </body>
 </html>

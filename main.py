@@ -1,8 +1,7 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from starlette.requests import Request
 from sqlalchemy import create_engine, Column, String, Text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
@@ -41,6 +40,14 @@ class UserLogin(BaseModel):
     nickname: str
     password: str
 
+class SaveWishes(BaseModel):
+    nickname: str
+    wishes: str
+
+class SaveContactInfo(BaseModel):
+    nickname: str
+    contact_info: str
+
 @app.get("/", response_class=HTMLResponse)
 async def read_index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
@@ -69,6 +76,26 @@ async def login_user(user: UserLogin, db: Session = Depends(get_db)):
     if not db_user or db_user.password != user.password:
         raise HTTPException(status_code=400, detail="Invalid nickname or password")
     return {"message": "Login successful", "nickname": db_user.nickname}
+
+@app.post("/save-wishes")
+async def save_wishes(wishes: SaveWishes, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.nickname == wishes.nickname).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    user.wishes = wishes.wishes
+    db.commit()
+    db.refresh(user)
+    return {"message": "Wishes saved successfully"}
+
+@app.post("/save-contact-info")
+async def save_contact_info(contact_info: SaveContactInfo, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.nickname == contact_info.nickname).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    user.contact_info = contact_info.contact_info
+    db.commit()
+    db.refresh(user)
+    return {"message": "Contact info saved successfully"}
 
 @app.on_event("startup")
 async def startup():
