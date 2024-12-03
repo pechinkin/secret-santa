@@ -60,10 +60,20 @@
     </div>
 
     <script>
-        function handleLogout() {
-            window.location.href = './';
+        async function handleLogout() {
+            const response = await fetch('/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (response.ok) {
+                window.location.href = './';
+            } else {
+                alert('Failed to log out');
+            }
         }
-    
+
         async function handleSaveWishes() {
             const wishesContent = document.getElementById('wishes-content').innerText;
             const nickname = document.querySelector('.username').innerText;
@@ -80,7 +90,7 @@
                 alert('Failed to save wishes');
             }
         }
-    
+
         async function handleSaveContactInfo() {
             const contactInfoContent = document.getElementById('contact-info-content').innerText;
             const nickname = document.querySelector('.username').innerText;
@@ -98,6 +108,6 @@
             }
         }
     </script>
-    
+
 </body>
 </html>

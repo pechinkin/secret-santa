@@ -59,7 +59,7 @@
                 const data = await response.json();
                 if (response.ok) {
                     alert(data.message);
-                    window.location.href = `home?nickname=${nickname}`;
+                    window.location.href = `home`;
                 } else {
                     alert('Registration failed: ' + data.detail);
                 }
@@ -85,7 +85,7 @@
                 const data = await response.json();
                 if (response.ok) {
                     alert(data.message);
-                    window.location.href = `home?nickname=${nickname}`;
+                    window.location.href = `home`;
                 } else {
                     alert('Login failed: ' + data.detail);
                 }

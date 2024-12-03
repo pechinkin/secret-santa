@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import create_engine, Column, String, Text
@@ -48,16 +48,26 @@ class SaveContactInfo(BaseModel):
     nickname: str
     contact_info: str
 
+def get_user_from_token(request: Request, db: Session = Depends(get_db)):
+    token = request.cookies.get("secret_santa_user_token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Token not found")
+
+    nickname, password = token.split(":")
+    user = db.query(User).filter(User.nickname == nickname, User.password == password).first()
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    return user
+
 @app.get("/", response_class=HTMLResponse)
 async def read_index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 @app.get("/home", response_class=HTMLResponse)
-async def read_home(request: Request, nickname: str, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.nickname == nickname).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+async def read_home(request: Request, user: User = Depends(get_user_from_token)):
     return templates.TemplateResponse("home.html", {"request": request, "user": user})
+
 
 @app.post("/register")
 async def register_user(user: UserCreate, db: Session = Depends(get_db)):
@@ -68,14 +78,26 @@ async def register_user(user: UserCreate, db: Session = Depends(get_db)):
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    return {"message": "User registered successfully"}
+
+    response = JSONResponse(content={"message": "User registered successfully"})
+    response.set_cookie(key="secret_santa_user_token", value=f"{user.nickname}:{user.password}", httponly=True)
+    return response
 
 @app.post("/login")
 async def login_user(user: UserLogin, db: Session = Depends(get_db)):
     db_user = db.query(User).filter(User.nickname == user.nickname).first()
     if not db_user or db_user.password != user.password:
         raise HTTPException(status_code=400, detail="Invalid nickname or password")
-    return {"message": "Login successful", "nickname": db_user.nickname}
+
+    response = JSONResponse(content={"message": "Login successful", "nickname": db_user.nickname})
+    response.set_cookie(key="secret_santa_user_token", value=f"{user.nickname}:{user.password}", httponly=True)
+    return response
+
+@app.post("/logout")
+async def logout_user(response: Response):
+    response = JSONResponse(content={"message": "Logout successful"})
+    response.delete_cookie(key="secret_santa_user_token")
+    return response
 
 @app.post("/save-wishes")
 async def save_wishes(wishes: SaveWishes, db: Session = Depends(get_db)):

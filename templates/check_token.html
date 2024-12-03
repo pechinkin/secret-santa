@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Token</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="token-check-container">
+        <button class="button-link" onclick="checkToken()">
+            <div class="button-content">Check Token</div>
+        </button>
+    </div>
+
+    <script>
+        async function checkToken() {
+            try {
+                const response = await fetch('/check-token');
+                const data = await response.json();
+                alert(data.message);
+            } catch (error) {
+                console.error('Error checking token:', error);
+                alert('Failed to check token');
+            }
+        }
+    </script>
+</body>
+</html>
