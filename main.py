@@ -8,7 +8,7 @@ from sqlalchemy.orm import sessionmaker, Session
 from pydantic import BaseModel
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.date import DateTrigger
-from datetime import datetime
+from datetime import datetime, timezone
 import pytz
 import random
 
@@ -79,8 +79,16 @@ async def read_index(request: Request):
 async def read_home(request: Request, user: User = Depends(get_user_from_token)):
     return templates.TemplateResponse("home.html", {"request": request, "user": user})
 
+moscow_timezone = pytz.timezone('Europe/Moscow')
+registration_deadline = moscow_timezone.localize(datetime(2024, 12, 18, 0, 0))
+
 @app.post("/register")
 async def register_user(user: UserCreate, db: Session = Depends(get_db)):
+    current_time = datetime.now(moscow_timezone)
+
+    if current_time >= registration_deadline:
+        raise HTTPException(status_code=403, detail="Sorry, the deadline for registration was on 18th of December at midnight...")
+
     db_user = db.query(User).filter(User.nickname == user.nickname).first()
     if db_user:
         raise HTTPException(status_code=400, detail="Nickname already registered")
