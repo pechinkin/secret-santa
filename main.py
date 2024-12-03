@@ -6,25 +6,33 @@ from sqlalchemy import create_engine, Column, String, Text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 from pydantic import BaseModel
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.date import DateTrigger
+from datetime import datetime
+import pytz
+import random
 
+# Database configuration
 SQLALCHEMY_DATABASE_URL = "postgresql://myuser:mypassword@localhost/mydatabase"
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
+# User model
 class User(Base):
     __tablename__ = "users"
     nickname = Column(String(50), primary_key=True, index=True)
     password = Column(String(100), nullable=False)
     contact_info = Column(String(255))
     wishes = Column(Text)
-    gifting_to = Column(String(50))
+    gifting_to = Column(String(1000))
 
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
+# Dependency to get the database session
 def get_db():
     db = SessionLocal()
     try:
@@ -32,6 +40,7 @@ def get_db():
     finally:
         db.close()
 
+# Pydantic models for request validation
 class UserCreate(BaseModel):
     nickname: str
     password: str
@@ -48,6 +57,7 @@ class SaveContactInfo(BaseModel):
     nickname: str
     contact_info: str
 
+# Dependency to get the user from the token
 def get_user_from_token(request: Request, db: Session = Depends(get_db)):
     token = request.cookies.get("secret_santa_user_token")
     if not token:
@@ -60,6 +70,7 @@ def get_user_from_token(request: Request, db: Session = Depends(get_db)):
 
     return user
 
+# Routes
 @app.get("/", response_class=HTMLResponse)
 async def read_index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
@@ -67,7 +78,6 @@ async def read_index(request: Request):
 @app.get("/home", response_class=HTMLResponse)
 async def read_home(request: Request, user: User = Depends(get_user_from_token)):
     return templates.TemplateResponse("home.html", {"request": request, "user": user})
-
 
 @app.post("/register")
 async def register_user(user: UserCreate, db: Session = Depends(get_db)):
@@ -119,6 +129,35 @@ async def save_contact_info(contact_info: SaveContactInfo, db: Session = Depends
     db.refresh(user)
     return {"message": "Contact info saved successfully"}
 
+scheduler = BackgroundScheduler()
+
 @app.on_event("startup")
 async def startup():
     Base.metadata.create_all(bind=engine)
+
+    scheduler = BackgroundScheduler()
+
+    def assign_gifting_to(db: Session):
+        users = db.query(User).all()
+        nicknames = [user.nickname for user in users]
+        random.shuffle(nicknames)
+        for i in range(len(nicknames)):
+            user = db.query(User).filter(User.nickname == nicknames[i]).first()
+            gifting_to_user = db.query(User).filter(User.nickname == nicknames[(i + 1) % len(nicknames)]).first()
+            user.gifting_to = (
+                f"Nickname: {gifting_to_user.nickname}\n"
+                f"Contact Info: {gifting_to_user.contact_info}\n"
+                f"Wishes: {gifting_to_user.wishes}"
+            )
+            db.commit()
+
+    moscow_timezone = pytz.timezone('Europe/Moscow')
+    run_date = moscow_timezone.localize(datetime(2024, 12, 18, 0, 0))
+    trigger = DateTrigger(run_date=run_date)
+    scheduler.add_job(assign_gifting_to, trigger, args=[SessionLocal()])
+
+    scheduler.start()
+
+@app.on_event("shutdown")
+def shutdown():
+    scheduler.shutdown()
