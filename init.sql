@@ -3,5 +3,5 @@ CREATE TABLE users (
     password VARCHAR(100) NOT NULL,
     contact_info VARCHAR(255),
     wishes TEXT,
-    gifting_to VARCHAR(50)
+    gifting_to TEXT
 );

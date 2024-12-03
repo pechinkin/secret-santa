@@ -1,7 +1,13 @@
-FROM postgres:latest
+FROM python:3.9-slim
 
-ENV POSTGRES_USER=myuser
-ENV POSTGRES_PASSWORD=mypassword
-ENV POSTGRES_DB=mydatabase
+WORKDIR /app
 
-COPY init.sql /docker-entrypoint-initdb.d/
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+EXPOSE 8000
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
